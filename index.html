@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EDUMAX - Integrated Student ERP System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ==================== LOGIN VIEW ==================== -->
+  <div id="login-view" class="login-container">
+    <div class="login-branding">
+      <div class="login-brand-logo">
+        <div class="brand-icon">Ω</div>
+        <span>EDUMAX ERP</span>
+      </div>
+      <div class="login-branding-hero">
+        <h2>Smart Campus Management.</h2>
+        <p>A unified cloud-based ERP solution to streamline student admissions, academic records, attendance trackers, timetables, fee collection, and campus resources.</p>
+      </div>
+      <div class="login-branding-footer">
+        &copy; 2026 EduMax Systems Inc. All rights reserved.
+      </div>
+    </div>
+    <div class="login-form-area">
+      <div class="login-card">
+        <h3>Welcome Back</h3>
+        <p>Select a simulation profile for instant testing:</p>
+        
+        <div class="role-switcher-grid">
+          <button type="button" class="role-select-btn active" onclick="setLoginRole('admin')">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zM12 14a3 3 0 100-6 3 3 0 000 6z"></path></svg>
+            Admin
+          </button>
+          <button type="button" class="role-select-btn" onclick="setLoginRole('faculty')">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z"></path><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
+            Faculty
+          </button>
+          <button type="button" class="role-select-btn" onclick="setLoginRole('student')">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 100-8 4 4 0 000 8z"></path></svg>
+            Student
+          </button>
+          <button type="button" class="role-select-btn" onclick="setLoginRole('parent')">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 100-8 4 4 0 000 8z"></path><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"></path></svg>
+            Parent
+          </button>
+          <button type="button" class="role-select-btn" onclick="setLoginRole('accountant')">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"></path></svg>
+            Finance
+          </button>
+          <button type="button" class="role-select-btn" onclick="setLoginRole('librarian')">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"></path></svg>
+            Library
+          </button>
+        </div>
+
+        <form id="login-form">
+          <div class="form-group">
+            <label for="username">Username / Email</label>
+            <input type="text" id="username" class="form-control" placeholder="admin" required>
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+          </div>
+          <button type="submit" class="btn-login">Sign In</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MAIN ERP APP SYSTEM ==================== -->
+  <div id="app-view" class="app-container" style="display: none;">
+    
+    <!-- Navigation Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">Ω</div>
+        <span class="brand-name">EDUMAX ERP</span>
+      </div>
+      
+      <div class="sidebar-profile">
+        <div id="profile-avatar" class="profile-avatar">AD</div>
+        <div class="profile-info">
+          <span id="profile-name" class="profile-name">Administrator</span>
+          <span id="profile-role" class="profile-role">Admin</span>
+        </div>
+      </div>
+      
+      <ul id="sidebar-menu" class="sidebar-menu">
+        <!-- Menu Items dynamically injected by app.js depending on active user role -->
+      </ul>
+      
+      <div class="sidebar-footer">
+        <button class="btn-signout" onclick="signOut()">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"></path></svg>
+          <span>Sign Out</span>
+        </button>
+      </div>
+    </aside>
+    
+    <!-- Main Content Area -->
+    <main class="main-viewport">
+      
+      <!-- Top Header -->
+      <header class="app-header">
+        <div class="header-search">
+          <svg fill="none" stroke="#64748b" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" placeholder="Global Search (Students, Courses...)" onkeyup="handleGlobalSearch(event)">
+        </div>
+        
+        <div class="header-actions">
+          <span id="header-role-tag" class="role-tag">Admin View</span>
+          
+          <div class="notifications-trigger" onclick="openAnnouncementsModal()">
+            <svg fill="none" stroke="#64748b" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"></path></svg>
+            <span id="announcement-bell-badge" class="notification-badge" style="display: none;">3</span>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Dynamic Workspace panels -->
+      <div id="content-viewport" class="content-area">
+        
+        <!-- ==================== DASHBOARD PANEL ==================== -->
+        <section id="panel-dashboard" class="workspace-panel animate-fade">
+          <div class="panel-title-bar">
+            <div>
+              <h1 id="dashboard-welcome-msg" class="panel-title">Hello, Admin</h1>
+              <p class="panel-subtitle">Here is what is happening across the university today.</p>
+            </div>
+            <div id="dashboard-role-action">
+              <!-- Context action (e.g. Add Student shortcut) -->
+            </div>
+          </div>
+          
+          <!-- Role Stats Widgets -->
+          <div id="dashboard-stats" class="stats-grid"></div>
+          
+          <div class="dashboard-grid-2">
+            <!-- Left Side: Interactive SVG Charts -->
+            <div class="dashboard-card">
+              <div class="card-header">
+                <span id="chart-title" class="card-title">Enrollment & Attendance Analysis</span>
+                <div class="card-header-actions">
+                  <!-- toggle options if needed -->
+                </div>
+              </div>
+              <div id="chart-viewport" class="svg-chart-container">
+                <!-- Injected via app.js -->
+              </div>
+            </div>
+            
+            <!-- Right Side: Recent Announcements -->
+            <div class="dashboard-card">
+              <div class="card-header">
+                <span class="card-title">University Announcements</span>
+                <button class="btn btn-outline btn-sm" onclick="showModule('announcements')">View All</button>
+              </div>
+              <div id="dashboard-announcements" class="announcement-list"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== STUDENT ADMISSIONS PANEL ==================== -->
+        <section id="panel-admissions" class="workspace-panel animate-fade" style="display: none;">
+          <div class="panel-title-bar">
+            <div>
+              <h1 class="panel-title">Student Admission & Registration</h1>
+              <p class="panel-subtitle">Onboard new students into the ERP system database.</p>
+            </div>
+          </div>
+          
+          <div class="dashboard-card" style="max-width: 800px; margin: 0 auto;">
+            <div class="card-header">
+              <span class="card-title">Registration Form</span>
+            </div>
+            <form id="admission-form" onsubmit="submitAdmissionForm(event)">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div class="form-group">
+                  <label for="adm-name">Full Name *</label>
+                  <input type="text" id="adm-name" class="form-control" style="color:#333; background:#fff; border:1px solid #cbd5e1" required>
+                </div>
+                <div class="form-group">
+                  <label for="adm-email">Personal Email</label>
+                  <input type="email" id="adm-email" class="form-control" style="color:#333; background:#fff; border:1px solid #cbd5e1" placeholder="Optional (system will auto-generate edu email)">
+                </div>
+              </div>
+              
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div class="form-group">
+                  <label for="adm-phone">Contact Number *</label>
+                  <input type="text" id="adm-phone" class="form-control" style="color:#333; background:#fff; border:1px solid #cbd5e1" placeholder="+1 555-xxxx" required>
+                </div>
+                <div class="form-group">
+                  <label for="adm-dept">Department *</label>
+                  <select id="adm-dept" class="filter-select" onchange="populateCourseDropdown('adm-course', this.value)" required>
+                    <option value="">Select Department</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div class="form-group">
+                  <label for="adm-course">Enrolled Course *</label>
+                  <select id="adm-course" class="filter-select" required>
+                    <option value="">Select Course</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="adm-sem">Starting Semester *</label>
+                  <select id="adm-sem" class="filter-select" required>
+                    <option value="1">Semester 1</option>
+                    <option value="2">Semester 2</option>
+                    <option value="3">Semester 3</option>
+                    <option value="4">Semester 4</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="border-top: 1px solid var(--border-color); padding-top: 20px; margin-top: 20px; margin-bottom: 20px;">
+                <h4 style="margin-bottom: 12px; font-size: 0.9rem; color: var(--text-main)">Guardian / Parent Details</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                  <div class="form-group">
+                    <label for="adm-parent">Parent Name *</label>
+                    <input type="text" id="adm-parent" class="form-control" style="color:#333; background:#fff; border:1px solid #cbd5e1" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="adm-parent-phone">Parent Phone *</label>
+                    <input type="text" id="adm-parent-phone" class="form-control" style="color:#333; background:#fff; border:1px solid #cbd5e1" required>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group" style="flex-direction: row; align-items: center; gap: 10px; margin-bottom: 20px;">
+                <input type="checkbox" id="adm-doc" checked>
+                <label for="adm-doc" style="cursor: pointer; text-transform:none; font-weight: normal; font-size: 0.88rem;">Document verification check completed</label>
+              </div>
+
+              <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button type="reset" class="btn btn-outline">Clear Form</button>
+                <button type="submit" class="btn btn-primary">Admit Student</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- ==================== STUDENT DIRECTORY PANEL ==================== -->
+        <section id="panel-directory" class="workspace-panel animate-fade" style="display: none;">
+          <div class="panel-title-bar">
+            <div>
+              <h1 class="panel-title">Student Directory</h1>
+              <p class="panel-subtitle">Access student profile histories, transcripts, and records.</p>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="showModule('admissions')">+ Add Student</button>
+          </div>
+          
+          <div class="table-filter-bar">
+            <div class="search-input-group">
+              <svg fill="none" stroke="#64748b" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input type="text" id="student-search-input" placeholder="Search by name or roll..." oninput="renderStudentDirectory()">
+            </div>
+            <div class="filter-controls">
+              <select id="student-dept-filter" class="filter-select" onchange="renderStudentDirectory()">
+                <option value="">All Departments</option>
+              </select>
+              <select id="student-sem-filter" class="filter-select" onchange="renderStudentDirectory()">
+                <option value="">All Semesters</option>
+                <option value="1">Semester 1</option>
+                <option value="2">Semester 2</option>
+                <option value="3">Semester 3</option>
+                <option value="4">Semester 4</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Roll No</th>
+                  <th>Student Name</th>
+                  <th>Department</th>
+                  <th>Course</th>
+                  <th>Semester</th>
+                  <th>Status</th>
+                  <th style="text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="student-directory-tbody">
+                <!-- Injected via app.js -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ==================== FACULTY DIRECTORY PANEL ==================== -->
+        <section id="panel-faculty" class="workspace-panel animate-fade" style="display: none;">
+          <div class="panel-title-bar">
+            <div>
+              <h1 class="panel-title">Faculty Roster</h1>
+              <p class="panel-subtitle">Manage educators, departments, and course workloads.</p>
+            </div>
+          </div>
+          
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Educator Name</th>
+                  <th>Department</th>
+                  <th>Designation</th>
+                  <th>Corporate Email</th>
+                  <th>Subjects Assigned</th>
+                </tr>
+              </thead>
+              <tbody id="faculty-directory-tbody">
+                <!-- Injected via app.js -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ==================== COURSES & SUBJECTS PANEL ==================== -->
+        <section id="panel-courses" class="workspace-panel animate-fade" style="display: none;">
+          <div class="panel-title-bar">
+            <div>
+              <h1 class="panel-title">Curriculum & Course Management</h1>
+              <p class="panel-subtitle">View university degree courses, programs, and semester subjects.</p>
+            </div>
+          </div>
+
+          <div class="dashboard-grid-2" style="grid-template-columns: 1fr 1fr;">
+            <!-- Left Side: Courses -->
+            <div class="dashboard-card">
+              <div class="card-header">
+                <span class="card-title">Approved Programs</span>
+              </div>
+              <div class="table-container">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Code</th>
+                      <th>Course Title</th>
+                      <th>Dept</th>
+                      <th>Duration</th>
+                    </tr>
+                  </thead>
+                  <tbody id="courses-tbody">
+                    <!-- Injected via app.js -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Right Side: Semester Subjects -->
+            <div class="dashboard-card">
+              <div class="card-header">
+                <span class="card-title">Subject Registry</span>
+                <select id="subject-course-select" class="filter-select" onchange="renderSubjectsTable()">
+                  <!-- Options injected dynamically -->
+                </select>
+              </div>
+              <div class="table-container">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Subject Code</th>
+                      <th>Subject Name</th>
+                      <th>Sem</th>
+                      <th>Credits</th>
+                    </tr>
+                  </thead>
+                  <tbody id="subjects-tbody">
+                    <!-- Injected via app.js -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== ATTENDANCE MANAGEMENT PANEL ==================== -->
+        <section id="panel-attendance" class="workspace-panel animate-fade" style="display: none;">
+          <div class="panel-title-bar">
+            <div>
+              <h1 class="panel-title">Attendance Tracking Ledger</h1>
+              <p class="panel-subtitle">Review attendance registers or log daily session counts.</p>
+            </div>
+            <div id="attendance-panel-action">
+              <!-- Mark Attendance button (only visible to faculty) -->
+            </div>
+          </div>
+
+          <!-- Attendance stats widget for Students / Parents view -->
+          <div id="student-attendance-summary" class="dashboard-card" style="display: none; margin-bottom: 28px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
+              <div class="progress-ring-container">
+                <svg class="progress-ring" width="100" height="100">
+                  <circle stroke="#cbd5e1" stroke-width="8" fill="transparent" r="40" cx="50" cy="50"/>
+                  <circle id="attendance-progress-ring" stroke="var(--secondary)" stroke-width="8" fill="transparent" r="40" cx="50" cy="50" class="progress-ring-circle" stroke-dasharray="251.2" stroke-dashoffset="251.2"/>
+                </svg>
+                <div class="progress-text">
+                  <strong id="attendance-total-pct">0%</strong>
+                  <span>Aggregate</span>
+                </div>
+              </div>
+              <div style="flex-grow:1; display:flex; flex-direction:column; gap:6px;">
+                <h3 style="font-size: 1.1rem; font-weight:700;">Academic Compliance Status</h3>
+                <p id="attendance-status-comment" style="font-size:0.85rem; color:var(--text-muted);">Please maintain a minimum of 75% attendance to avoid examination restrictions.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-card">
+            <div class="card-header">
+              <span class="card-title">Subject-wise Attendance Breakdown</span>
+            </div>
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr id="attendance-table-header">
+                    <!-- Dynamic Headers depending on role -->
+                  </tr>
+                </thead>
+                <tbody id="attendance-tbody">
+                  <!-- Injected via app.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== EXAMINATION & RESULTS PANEL ==================== -->
+        <section id="panel-results" class="workspace-panel animate-fade" style="display: none;">
+          <div class="panel-title-bar">
+            <div>
+              <h1 class="panel-title">Examination & Grades Management</h1>
+              <p class="panel-subtitle">Access final transcripts or enter exam grade letters.</p>
+            </div>
+            <div id="results-panel-action">
+              <!-- Grade entry trigger buttons -->
+            </div>
+          </div>
+
+          <!-- Academic transcript for Student / Parent -->
+          <div id="student-transcript-card" style="display: none;" class="dashboard-card">
+            <div class="card-header">
+              <span class="card-title">Official Grade Transcript</span>
+              <div style="display: flex; gap: 15px;">
+                <div style="text-align: right;">
+                  <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Cumulative GPA</div>
+                  <div id="student-gpa-val" style="font-size: 1.3rem; font-weight: 800; color: var(--primary);">4.0</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Subject Code</th>
+                    <th>Subject Title</th>
+                    <th>Semester</th>
+                    <th>Marks Obtained</th>
+                    <th>Grade Letter</th>
+                    <th>Grade Point</th>
+                  </tr>
+                </thead>
+                <tbody id="transcript-tbody">
+                  <!-- Injected via app.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- All student results (Admin View) -->
+          <div id="admin-results-card" style="display: none;" class="dashboard-card">
+            <div class="card-header">
+              <span class="card-title">Department Grade Sheets</span>
+            </div>
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Roll No</th>
+                    <th>Student Name</th>
+                    <th>Course</th>
+                    <th>Grades Invoiced</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-results-tbody">
+                  <!-- Injected via app.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== FEE MANAGEMENT PANEL ==================== -->
+        <section id="panel-fees" class="workspace-panel animate-fade" style="display: none;">
+          <div class="panel-title-bar">
+            <div>
+              <h1 class="panel-title">Accounts & Billing Ledger</h1>
+              <p class="panel-subtitle">Track academic invoices, log fee collections, and pay outstanding balances.</p>
+            </div>
+            <div id="fees-panel-action">
+              <!-- Accountant actions: Create Invoice -->
+            </div>
+          </div>
+
+          <div class="dashboard-card">
+            <div class="card-header">
+              <span class="card-title">Fee Invoice Transactions</span>
+            </div>
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Invoice ID</th>
+                    <th>Details</th>
+                    <th>Sem</th>
+                    <th>Due Date</th>
+                    <th>Amount</th>
+                    <th>Payment Status</th>
+                    <th style="text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="fees-tbody">
+                  <!-- Injected via app.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== LIBRARY MANAGEMENT PANEL ==================== -->
+        <section id="panel-library" class="workspace-panel animate-fade" style="display: none;">
+          <div class="panel-title-bar">
+            <div>
+              <h1 class="panel-title">Library Inventory Catalog</h1>
+              <p class="panel-subtitle">Track book availability, manage circulation checkouts, and view pending fines.</p>
+            </div>
+            <div id="library-panel-action">
+              <!-- Librarian shortcuts -->
+            </div>
+          </div>
+
+          <div class="dashboard-grid-2">
+            <!-- Left Side: Catalog search -->
+            <div class="dashboard-card">
+              <div class="card-header">
+                <span class="card-title">Book Search Registry</span>
+              </div>
+              <div class="table-container">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Title / Author</th>
+                      <th>Category</th>
+                      <th>Total</th>
+                      <th>Available</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="library-catalog-tbody">
+                    <!-- Injected via app.js -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            
+            <!-- Right Side: Circulation logs / Issued books -->
+            <div class="dashboard-card">
+              <div class="card-header">
+                <span id="library-issues-title" class="card-title">Borrowing Status Logs</span>
+              </div>
+              <div id="library-issues-list" style="display: flex; flex-direction: column; gap: 16px; max-height: 480px; overflow-y: auto;">
+                <!-- Injected via app.js -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== TIMETABLE PANEL ==================== -->
+        <section id="panel-timetable" class="workspace-panel animate-fade" style="display: none;">
+          <div class="panel-title-bar">
+            <div>
+              <h1 class="panel-title">Academic Class Schedule</h1>
+              <p class="panel-subtitle">View classes, lecture halls, and faculty schedules.</p>
+            </div>
+          </div>
+
+          <div class="dashboard-card">
+            <div class="card-header">
+              <span class="card-title">Weekly Lecture Grid</span>
+              <div id="timetable-selector-group">
+                <!-- Dropdown selector for department and semester -->
+              </div>
+            </div>
+            
+            <!-- Grid structure Monday - Friday -->
+            <div class="timetable-grid" id="timetable-container">
+              <!-- Injected via app.js -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== ANNOUNCEMENTS PANEL ==================== -->
+        <section id="panel-announcements" class="workspace-panel animate-fade" style="display: none;">
+          <div class="panel-title-bar">
+            <div>
+              <h1 class="panel-title">University Circulars</h1>
+              <p class="panel-subtitle">System-wide bulletin board announcements.</p>
+            </div>
+            <div id="announcements-panel-action">
+              <!-- Admin Add Announcement button -->
+            </div>
+          </div>
+
+          <div class="dashboard-card" style="max-width: 900px; margin: 0 auto;">
+            <div id="announcements-full-list" class="announcement-list">
+              <!-- Injected via app.js -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== REPORTS & ANALYTICS PANEL ==================== -->
+        <section id="panel-reports" class="workspace-panel animate-fade" style="display: none;">
+          <div class="panel-title-bar">
+            <div>
+              <h1 class="panel-title">Reports & Analytics Engine</h1>
+              <p class="panel-subtitle">Generate statistical reports on enrollment, grading, and finances.</p>
+            </div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card" style="cursor: pointer;" onclick="generateReport('attendance')">
+              <div class="stat-info">
+                <span class="stat-label">Report Sheets</span>
+                <span class="stat-val" style="font-size: 1.15rem;">Attendance Audit</span>
+              </div>
+              <div class="stat-icon-container primary">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path d="M9 17v-2m3 2v-4m3 4V9M9 3h6a2 2 0 012 2v14a2 2 0 01-2 2H9a2 2 0 01-2-2V5a2 2 0 012-2z"></path></svg>
+              </div>
+            </div>
+            <div class="stat-card" style="cursor: pointer;" onclick="generateReport('grading')">
+              <div class="stat-info">
+                <span class="stat-label">Report Sheets</span>
+                <span class="stat-val" style="font-size: 1.15rem;">Grading Performance</span>
+              </div>
+              <div class="stat-icon-container secondary">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path d="M9 17v-2m3 2v-4m3 4V9M9 3h6a2 2 0 012 2v14a2 2 0 01-2 2H9a2 2 0 01-2-2V5a2 2 0 012-2z"></path></svg>
+              </div>
+            </div>
+            <div class="stat-card" style="cursor: pointer;" onclick="generateReport('finances')">
+              <div class="stat-info">
+                <span class="stat-label">Report Sheets</span>
+                <span class="stat-val" style="font-size: 1.15rem;">Financial Summary</span>
+              </div>
+              <div class="stat-icon-container accent">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-card" id="analytics-result-card" style="display: none;">
+            <div class="card-header">
+              <span id="analytics-result-title" class="card-title">Generated Analytics Output</span>
+              <button class="btn btn-outline btn-sm" onclick="window.print()">Print Report</button>
+            </div>
+            <div id="analytics-result-body">
+              <!-- Injected dynamically via app.js -->
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ==================== MODAL OVERLAYS SYSTEM ==================== -->
+  
+  <!-- General Announcement Modal -->
+  <div id="modal-announcement" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span class="modal-title" id="ann-modal-title">Announcements Detail</span>
+        <button class="modal-close" onclick="closeModal('modal-announcement')">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <div class="modal-body" id="ann-modal-body">
+        <!-- Content injected dynamically -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modal-announcement')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Student Details Profile / Report Card -->
+  <div id="modal-student-details" class="modal-overlay">
+    <div class="modal-box" style="max-width: 650px;">
+      <div class="modal-header">
+        <span class="modal-title">Student Profile Folder</span>
+        <button class="modal-close" onclick="closeModal('modal-student-details')">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <div class="modal-body" id="student-details-body">
+        <!-- Injected via app.js -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modal-student-details')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mark Attendance Modal (Faculty Interface) -->
+  <div id="modal-mark-attendance" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span class="modal-title">Daily Attendance Sheet</span>
+        <button class="modal-close" onclick="closeModal('modal-mark-attendance')">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+          <div class="form-group">
+            <label for="att-subject-select">Subject</label>
+            <select id="att-subject-select" class="filter-select" onchange="loadAttendanceFormStudents()">
+              <!-- Options -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="att-date">Session Date</label>
+            <input type="date" id="att-date" class="form-control" style="color:#333; background:#fff; border:1px solid #cbd5e1" value="">
+          </div>
+        </div>
+        
+        <div style="border-top: 1px solid var(--border-color); padding-top: 15px;">
+          <h4 style="margin-bottom: 12px; font-size: 0.95rem;">Student Register</h4>
+          <div id="attendance-form-list" class="attendance-marking-list">
+            <!-- Student Rows -->
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modal-mark-attendance')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitAttendanceSheet()">Save Record</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Enter Grades Modal (Faculty Interface) -->
+  <div id="modal-enter-grades" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span class="modal-title">Input Examination Marks</span>
+        <button class="modal-close" onclick="closeModal('modal-enter-grades')">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+          <div class="form-group">
+            <label for="gr-student-select">Student Name</label>
+            <select id="gr-student-select" class="filter-select" onchange="loadStudentGradeSubjectOptions()">
+              <!-- Options -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="gr-subject-select">Subject</label>
+            <select id="gr-subject-select" class="filter-select">
+              <!-- Options -->
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="gr-marks">Final Marks (0 - 100) *</label>
+          <input type="number" id="gr-marks" class="form-control" style="color:#333; background:#fff; border:1px solid #cbd5e1" min="0" max="100" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modal-enter-grades')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitGradeEntry()">Save Grade</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Billing Invoice Modal (Accountant Interface) -->
+  <div id="modal-create-invoice" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span class="modal-title">Issue Academic Invoice</span>
+        <button class="modal-close" onclick="closeModal('modal-create-invoice')">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="inv-student-select">Select Student *</label>
+          <select id="inv-student-select" class="filter-select" required>
+            <!-- Options -->
+          </select>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+          <div class="form-group">
+            <label for="inv-type">Billing Account Type *</label>
+            <select id="inv-type" class="filter-select" required>
+              <option value="Tuition Fee">Tuition Fee</option>
+              <option value="Hostel Fee">Hostel Fee</option>
+              <option value="Exam Fee">Exam Fee</option>
+              <option value="Library Fine">Library Fine</option>
+              <option value="Transport Fee">Transport Fee</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="inv-sem">Target Semester *</label>
+            <select id="inv-sem" class="filter-select" required>
+              <option value="1">Semester 1</option>
+              <option value="2">Semester 2</option>
+              <option value="3">Semester 3</option>
+              <option value="4">Semester 4</option>
+            </select>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+          <div class="form-group">
+            <label for="inv-amount">Amount (USD) *</label>
+            <input type="number" id="inv-amount" class="form-control" style="color:#333; background:#fff; border:1px solid #cbd5e1" min="1" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label for="inv-due">Payment Deadline *</label>
+            <input type="date" id="inv-due" class="form-control" style="color:#333; background:#fff; border:1px solid #cbd5e1" required>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modal-create-invoice')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitCreateInvoice()">Issue Invoice</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mock Credit Card Payment Gateway Checkout Modal -->
+  <div id="modal-checkout" class="modal-overlay">
+    <div class="modal-box" style="max-width: 440px;">
+      <div class="modal-header">
+        <span class="modal-title">Secure Fee Portal Gateway</span>
+        <button class="modal-close" onclick="closeModal('modal-checkout')">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div style="font-size: 0.82rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Outstanding Amount Due</div>
+          <div id="checkout-amount-lbl" style="font-size: 2rem; font-weight: 800; color: var(--text-main); margin-top: 6px;">$0.00</div>
+          <div id="checkout-desc-lbl" style="font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-top: 4px;">Tuition Fee - Sem 2</div>
+        </div>
+        
+        <form id="checkout-form" onsubmit="submitPaymentGateway(event)">
+          <div class="form-group">
+            <label for="card-num">Credit/Debit Card Number</label>
+            <input type="text" id="card-num" class="form-control" style="color:#333; background:#fff; border:1px solid #cbd5e1" placeholder="4111 2222 3333 4444" required>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+            <div class="form-group">
+              <label for="card-expiry">Expiry Date</label>
+              <input type="text" id="card-expiry" class="form-control" style="color:#333; background:#fff; border:1px solid #cbd5e1" placeholder="MM/YY" required>
+            </div>
+            <div class="form-group">
+              <label for="card-cvv">CVV</label>
+              <input type="password" id="card-cvv" class="form-control" style="color:#333; background:#fff; border:1px solid #cbd5e1" placeholder="•••" maxlength="4" required>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">Process Payment</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Receipt Modal -->
+  <div id="modal-receipt" class="modal-overlay">
+    <div class="modal-box" style="max-width: 490px; background-color: #f8fafc;">
+      <div class="modal-header">
+        <span class="modal-title">Transaction Receipt Summary</span>
+        <button class="modal-close" onclick="closeModal('modal-receipt')">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <div class="modal-body" style="padding: 24px 0;">
+        <div id="receipt-modal-container">
+          <!-- Injected dynamically -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="window.print()">Print Receipt</button>
+        <button class="btn btn-primary" onclick="closeModal('modal-receipt')">Finished</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Library Issue Book Modal (Librarian View) -->
+  <div id="modal-issue-book" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span class="modal-title">Book Circulation Checkout</span>
+        <button class="modal-close" onclick="closeModal('modal-issue-book')">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="lib-book-select">Select Book Inventory *</label>
+          <select id="lib-book-select" class="filter-select" required>
+            <!-- Injected -->
+          </select>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+          <div class="form-group">
+            <label for="lib-student-select">Borrower Student *</label>
+            <select id="lib-student-select" class="filter-select" required>
+              <!-- Injected -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="lib-due">Due Date Return *</label>
+            <input type="date" id="lib-due" class="form-control" style="color:#333; background:#fff; border:1px solid #cbd5e1" required>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modal-issue-book')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitIssueBook()">Issue Book</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- University Announcements Creation Modal (Admin / Faculty) -->
+  <div id="modal-add-announcement" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span class="modal-title">Publish University Circular</span>
+        <button class="modal-close" onclick="closeModal('modal-add-announcement')">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="ann-title-in">Circular Heading Title *</label>
+          <input type="text" id="ann-title-in" class="form-control" style="color:#333; background:#fff; border:1px solid #cbd5e1" required>
+        </div>
+        <div class="form-group">
+          <label for="ann-cat-in">Category Classification</label>
+          <select id="ann-cat-in" class="filter-select">
+            <option value="Academic">Academic circular</option>
+            <option value="Financial">Financial circular</option>
+            <option value="Event">Campus Event</option>
+            <option value="General">General Bulletin</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="ann-content-in">Bulletin Content Detail *</label>
+          <textarea id="ann-content-in" class="form-control" style="color:#333; background:#fff; border:1px solid #cbd5e1; min-height: 120px; resize: vertical;" required></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modal-add-announcement')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitAnnouncement()">Publish announcement</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== LOGGING/LOADING SCRIPTS ==================== -->
+  <script src="mockData.js"></script>
+  <script src="state.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
