@@ -34,18 +34,43 @@ function setLoginRole(role) {
   const usernameInput = document.getElementById('username');
   const passwordInput = document.getElementById('password');
   
+  usernameInput.placeholder = "Enter Username / ID";
+  usernameInput.disabled = false;
+  passwordInput.disabled = false;
+
   if (role === 'admin') {
     usernameInput.value = 'admin';
     passwordInput.value = 'admin123';
   } else if (role === 'faculty') {
-    usernameInput.value = 'FAC001'; // Dr. Turing
-    passwordInput.value = 'faculty123';
+    const facultyList = db.getFaculty();
+    if (facultyList.length > 0) {
+      usernameInput.value = facultyList[0].id;
+      passwordInput.value = 'faculty123';
+    } else {
+      usernameInput.value = '';
+      usernameInput.placeholder = "No faculty. Register one as Admin.";
+      passwordInput.value = '';
+    }
   } else if (role === 'student') {
-    usernameInput.value = 'STD101'; // Alice Johnson
-    passwordInput.value = 'student123';
+    const studentList = db.getStudents();
+    if (studentList.length > 0) {
+      usernameInput.value = studentList[0].rollNo;
+      passwordInput.value = 'student123';
+    } else {
+      usernameInput.value = '';
+      usernameInput.placeholder = "No students. Register one as Admin.";
+      passwordInput.value = '';
+    }
   } else if (role === 'parent') {
-    usernameInput.value = 'STD101_parent'; // Alice Parent
-    passwordInput.value = 'parent123';
+    const studentList = db.getStudents();
+    if (studentList.length > 0) {
+      usernameInput.value = studentList[0].rollNo + '_parent';
+      passwordInput.value = 'parent123';
+    } else {
+      usernameInput.value = '';
+      usernameInput.placeholder = "No students. Register one as Admin.";
+      passwordInput.value = '';
+    }
   } else if (role === 'accountant') {
     usernameInput.value = 'finance_office';
     passwordInput.value = 'finance123';
@@ -63,16 +88,27 @@ function handleLoginForm(event) {
   if (currentRole === 'admin') {
     currentUser = { id: 'ADM001', name: 'Campus Registrar', role: 'admin', deptId: null };
   } else if (currentRole === 'faculty') {
-    const f = db.getFacultyById(username) || db.getFaculty()[0];
+    const f = db.getFacultyById(username) || db.getFaculty().find(fac => fac.id === username);
+    if (!f) {
+      alert("Faculty profile not found. Please log in as Admin and register a faculty profile first.");
+      return;
+    }
     currentUser = { id: f.id, name: f.name, role: 'faculty', deptId: f.deptId, subjects: f.subjects };
   } else if (currentRole === 'student') {
-    const s = db.getStudentById(username) || db.getStudents()[0];
+    const s = db.getStudentById(username) || db.getStudents().find(std => std.id === username || std.rollNo === username);
+    if (!s) {
+      alert("Student profile not found. Please log in as Admin and register a student profile first.");
+      return;
+    }
     currentUser = { id: s.id, name: s.name, role: 'student', deptId: s.deptId, courseId: s.courseId, semester: s.semester };
   } else if (currentRole === 'parent') {
-    // Parent matches a student
     const studentId = username.replace('_parent', '');
-    const s = db.getStudentById(studentId) || db.getStudents()[0];
-    currentUser = { id: s.id + '_parent', name: 'Robert Johnson', role: 'parent', studentId: s.id, studentName: s.name, deptId: s.deptId, courseId: s.courseId, semester: s.semester };
+    const s = db.getStudentById(studentId) || db.getStudents().find(std => std.id === studentId || std.rollNo === studentId);
+    if (!s) {
+      alert("Associated Student profile not found. Please register the student under the Admin panel first.");
+      return;
+    }
+    currentUser = { id: s.id + '_parent', name: `${s.parentName || 'Parent of ' + s.name}`, role: 'parent', studentId: s.id, studentName: s.name, deptId: s.deptId, courseId: s.courseId, semester: s.semester };
   } else if (currentRole === 'accountant') {
     currentUser = { id: 'ACC001', name: 'Finance Controller', role: 'accountant' };
   } else if (currentRole === 'librarian') {
@@ -273,20 +309,24 @@ function renderDashboard() {
   const annContainer = document.getElementById('dashboard-announcements');
   annContainer.innerHTML = '';
   const circulars = db.getAnnouncements().slice(0, 3);
-  circulars.forEach(c => {
-    const categoryClass = c.category ? c.category.toLowerCase() : 'general';
-    const div = document.createElement('div');
-    div.className = `announcement-item ${categoryClass}`;
-    div.innerHTML = `
-      <div class="announce-header">
-        <span class="announce-title" onclick="openAnnouncementDetailsModal('${c.id}')">${c.title}</span>
-        <span class="announce-date">${c.date}</span>
-      </div>
-      <div class="announce-desc">${c.content}</div>
-      <div class="announce-author">Published by: ${c.author}</div>
-    `;
-    annContainer.appendChild(div);
-  });
+  if (circulars.length === 0) {
+    annContainer.innerHTML = '<p style="font-size:0.82rem; color:var(--text-muted); text-align:center; padding: 20px 0;">No announcements published.</p>';
+  } else {
+    circulars.forEach(c => {
+      const categoryClass = c.category ? c.category.toLowerCase() : 'general';
+      const div = document.createElement('div');
+      div.className = `announcement-item ${categoryClass}`;
+      div.innerHTML = `
+        <div class="announce-header">
+          <span class="announce-title" onclick="openAnnouncementDetailsModal('${c.id}')">${c.title}</span>
+          <span class="announce-date">${c.date}</span>
+        </div>
+        <div class="announce-desc">${c.content}</div>
+        <div class="announce-author">Published by: ${c.author}</div>
+      `;
+      annContainer.appendChild(div);
+    });
+  }
 }
 
 function renderDashboardStats() {
@@ -605,6 +645,12 @@ function renderStudentDirectory() {
     const course = db.getCourses().find(c => c.id === s.courseId);
     const tr = document.createElement('tr');
     tr.className = 'animate-scale';
+    
+    let actionButtonsHtml = `<button class="btn btn-outline btn-sm" onclick="openStudentDetailsModal('${s.id}')">View Details</button>`;
+    if (currentUser.role === 'admin') {
+      actionButtonsHtml += ` <button class="btn btn-danger btn-sm" onclick="deleteStudentRoster('${s.id}')">Delete</button>`;
+    }
+
     tr.innerHTML = `
       <td style="font-weight:700; color:var(--primary);">${s.rollNo}</td>
       <td>${s.name}</td>
@@ -613,7 +659,7 @@ function renderStudentDirectory() {
       <td>Sem ${s.semester}</td>
       <td><span class="badge badge-success">${s.status}</span></td>
       <td style="text-align: right;">
-        <button class="btn btn-outline btn-sm" onclick="openStudentDetailsModal('${s.id}')">View Details</button>
+        ${actionButtonsHtml}
       </td>
     `;
     tbody.appendChild(tr);
@@ -726,9 +772,32 @@ function renderFacultyDirectory() {
   const tbody = document.getElementById('faculty-directory-tbody');
   tbody.innerHTML = '';
 
-  db.getFaculty().forEach(f => {
+  const actionDiv = document.getElementById('faculty-panel-action');
+  if (actionDiv) {
+    if (currentUser.role === 'admin') {
+      actionDiv.innerHTML = `<button class="btn btn-primary btn-sm" onclick="openRegisterFacultyModal()">+ Register Faculty</button>`;
+    } else {
+      actionDiv.innerHTML = '';
+    }
+  }
+
+  const facultyList = db.getFaculty();
+  if (facultyList.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding: 20px 0;">No faculty registered in the roster yet.</td></tr>`;
+    return;
+  }
+
+  facultyList.forEach(f => {
     const tr = document.createElement('tr');
     tr.className = 'animate-scale';
+
+    let actionButtonsHtml = '';
+    if (currentUser.role === 'admin') {
+      actionButtonsHtml = `<button class="btn btn-danger btn-sm" onclick="deleteFacultyRoster('${f.id}')">Delete</button>`;
+    } else {
+      actionButtonsHtml = `<span style="font-size:0.8rem; color:var(--text-light)">-</span>`;
+    }
+
     tr.innerHTML = `
       <td style="font-weight:700; color:var(--text-muted);">${f.id}</td>
       <td><strong>${f.name}</strong></td>
@@ -736,9 +805,68 @@ function renderFacultyDirectory() {
       <td>${f.designation}</td>
       <td>${f.email}</td>
       <td>${f.subjects.map(s => `<span class="badge badge-info" style="margin-right:4px;">${s}</span>`).join('')}</td>
+      <td style="text-align: right;">${actionButtonsHtml}</td>
     `;
     tbody.appendChild(tr);
   });
+}
+
+function openRegisterFacultyModal() {
+  document.getElementById('fac-name').value = '';
+  
+  // Populate departments dropdown
+  const deptSelect = document.getElementById('fac-dept');
+  deptSelect.innerHTML = '<option value="">Select Department</option>';
+  db.getDepartments().forEach(d => {
+    deptSelect.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+  });
+
+  document.getElementById('fac-subjects').innerHTML = '<option value="">Select Department First</option>';
+  openModal('modal-register-faculty');
+}
+
+function populateFacultySubjectsDropdown(deptId) {
+  const subjectsSelect = document.getElementById('fac-subjects');
+  subjectsSelect.innerHTML = '';
+  
+  if (!deptId) return;
+
+  const subjects = db.getSubjects().filter(s => s.deptId === deptId);
+  if (subjects.length === 0) {
+    subjectsSelect.innerHTML = '<option value="">No subjects in this department</option>';
+    return;
+  }
+
+  // Deduplicate subjects by code
+  const seenCodes = new Set();
+  subjects.forEach(s => {
+    if (!seenCodes.has(s.code)) {
+      seenCodes.add(s.code);
+      subjectsSelect.innerHTML += `<option value="${s.code}">${s.code} - ${s.name}</option>`;
+    }
+  });
+}
+
+function submitFacultyRegistration() {
+  const name = document.getElementById('fac-name').value.trim();
+  const deptId = document.getElementById('fac-dept').value;
+  const designation = document.getElementById('fac-designation').value;
+  
+  const subjectsSelect = document.getElementById('fac-subjects');
+  const subjects = Array.from(subjectsSelect.selectedOptions).map(opt => opt.value).filter(val => val !== '');
+
+  if (!name || !deptId || !designation || subjects.length === 0) {
+    alert('Please fill out all fields and assign at least one subject.');
+    return;
+  }
+
+  const newFac = db.addFaculty({
+    name, deptId, designation, subjects
+  });
+
+  alert(`Faculty registered successfully! ID: ${newFac.id}`);
+  closeModal('modal-register-faculty');
+  renderFacultyDirectory();
 }
 
 // ==================== 5. COURSES & REGISTRY RENDERER ====================
@@ -1538,7 +1666,13 @@ function renderAnnouncementsModule() {
     actionDiv.innerHTML = `<button class="btn btn-primary" onclick="openAddAnnouncementModal()">+ Publish Circular</button>`;
   }
 
-  db.getAnnouncements().forEach(c => {
+  const annList = db.getAnnouncements();
+  if (annList.length === 0) {
+    container.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:0.85rem; padding: 40px 0;">No university announcements published yet.</p>';
+    return;
+  }
+
+  annList.forEach(c => {
     const div = document.createElement('div');
     const categoryClass = c.category ? c.category.toLowerCase() : 'general';
     div.className = `announcement-item ${categoryClass} animate-scale`;
@@ -1767,4 +1901,20 @@ function openModal(modalId) {
 function closeModal(modalId) {
   const modal = document.getElementById(modalId);
   if (modal) modal.classList.remove('active');
+}
+
+function deleteStudentRoster(id) {
+  if (confirm("Are you sure you want to permanently delete this student record, along with their fee invoices and library circulation logs?")) {
+    db.deleteStudent(id);
+    alert("Student record deleted successfully.");
+    renderStudentDirectory();
+  }
+}
+
+function deleteFacultyRoster(id) {
+  if (confirm("Are you sure you want to permanently delete this faculty profile?")) {
+    db.deleteFaculty(id);
+    alert("Faculty profile deleted successfully.");
+    renderFacultyDirectory();
+  }
 }

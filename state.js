@@ -1,6 +1,6 @@
 // state.js - Simulated Database Layer with localStorage Persistence
 
-const DB_KEY = 'student_erp_db';
+const DB_KEY = 'student_erp_db_v2';
 
 class ERPDatabase {
   constructor() {
@@ -328,6 +328,21 @@ class ERPDatabase {
       this.data.messages[idx].read = true;
       this.save();
     }
+  }
+
+  // --- Deletion API ---
+  deleteStudent(id) {
+    this.data.students = this.data.students.filter(s => s.id !== id);
+    this.data.invoices = this.data.invoices.filter(i => i.studentId !== id);
+    this.data.issuedBooks = this.data.issuedBooks.filter(ib => ib.studentId !== id);
+    this.save();
+    return true;
+  }
+
+  deleteFaculty(id) {
+    this.data.faculty = this.data.faculty.filter(f => f.id !== id);
+    this.save();
+    return true;
   }
 
   // --- Reset Database helper ---
