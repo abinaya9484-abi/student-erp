@@ -1591,6 +1591,10 @@ function renderTimetableModule() {
         <option value="2" selected>Semester 2</option>
         <option value="3">Semester 3</option>
         <option value="4">Semester 4</option>
+        <option value="5">Semester 5</option>
+        <option value="6">Semester 6</option>
+        <option value="7">Semester 7</option>
+        <option value="8">Semester 8</option>
       </select>
     `;
 
@@ -1876,6 +1880,9 @@ function generateReport(type) {
     `;
   }
 
+  // Set export button listener
+  document.getElementById('btn-export-excel').onclick = () => downloadReportExcel(type);
+
   // Scroll to results
   card.scrollIntoView({ behavior: 'smooth' });
 }
@@ -1916,5 +1923,70 @@ function deleteFacultyRoster(id) {
     db.deleteFaculty(id);
     alert("Faculty profile deleted successfully.");
     renderFacultyDirectory();
+  }
+}
+
+function downloadReportExcel(type) {
+  let csvContent = "";
+  let fileName = "";
+  
+  if (type === 'attendance') {
+    fileName = "Attendance_Audit_Report.csv";
+    csvContent = "Roll Number,Student Name,Compliance Status,Attendance Rate\n";
+    
+    const list = db.getStudents().map(s => {
+      let total = 0;
+      let attended = 0;
+      Object.values(s.attendance).forEach(a => {
+        total += a.total;
+        attended += a.attended;
+      });
+      const pct = total > 0 ? Math.round((attended / total) * 100) : 100;
+      return { roll: s.rollNo, name: s.name, status: pct < 75 ? 'DEBARRED WARNING' : 'COMPLIANT', pct: `${pct}%` };
+    });
+
+    list.forEach(item => {
+      csvContent += `"${item.roll}","${item.name.replace(/"/g, '""')}","${item.status}","${item.pct}"\n`;
+    });
+  } else if (type === 'grading') {
+    fileName = "Grading_Performance_Report.csv";
+    csvContent = "Roll Number,Student Name,Course Program,Cumulative GPA\n";
+
+    const list = db.getStudents().map(s => {
+      let sum = 0;
+      s.grades.forEach(g => sum += g.gpa);
+      const avg = s.grades.length > 0 ? (sum / s.grades.length).toFixed(2) : '0.00';
+      return { roll: s.rollNo, name: s.name, course: s.courseId, avg };
+    });
+
+    list.forEach(item => {
+      csvContent += `"${item.roll}","${item.name.replace(/"/g, '""')}","${item.course}","${item.avg}"\n`;
+    });
+  } else if (type === 'finances') {
+    fileName = "Financial_Receivables_Ledger_Report.csv";
+    csvContent = "Invoice ID,Student Name,Fee Category,Amount,Payment Status,Log Date\n";
+
+    const invoices = db.getInvoices();
+    invoices.forEach(i => {
+      const logDate = i.status === 'Paid' ? i.paidDate : 'Awaiting Payment';
+      csvContent += `"${i.id}","${i.studentName.replace(/"/g, '""')}","${i.type}","$${i.amount}","${i.status}","${logDate}"\n`;
+    });
+  }
+
+  // Trigger file download in browser
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  if (navigator.msSaveBlob) { // IE 10+
+    navigator.msSaveBlob(blob, fileName);
+  } else {
+    const link = document.createElement("a");
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", fileName);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   }
 }
