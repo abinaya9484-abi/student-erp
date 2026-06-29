@@ -3,7 +3,7 @@
 const DB_KEY = 'student_erp_db_v2';
 // Increment this version number whenever departments, courses, subjects, or timetables change.
 // The app will auto-refresh static data while preserving students, faculty, and invoices.
-const SCHEMA_VERSION = '3';
+const SCHEMA_VERSION = '4';
 
 class ERPDatabase {
   constructor() {
