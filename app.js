@@ -182,6 +182,7 @@ function buildSidebarMenu() {
   } else if (role === 'student' || role === 'parent') {
     items.push(
       { id: 'enrolled', label: 'Enrolled Courses', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>' },
+      { id: 'select-courses', label: 'Select Courses', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>' },
       { id: 'timetable', label: 'Weekly Schedule', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect></svg>' },
       { id: 'attendance', label: 'Attendance Tracker', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path></svg>' },
       { id: 'results', label: 'Grade Transcript', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12v-8z"></path></svg>' },
@@ -258,6 +259,7 @@ function showModule(panelName) {
   else if (panelName === 'announcements') renderAnnouncementsModule();
   else if (panelName === 'reports') renderReportsModule();
   else if (panelName === 'enrolled') renderEnrolledCoursesModule();
+  else if (panelName === 'select-courses') renderCourseSelectionModule();
 }
 
 // ==================== 1. DASHBOARD PANEL RENDERER ====================
@@ -2055,12 +2057,20 @@ function renderEnrolledList(student) {
   const grid = document.getElementById('enrolled-courses-grid');
   grid.innerHTML = '';
 
-  const subjects = db.getSubjectsForCourse(student.courseId, student.semester);
+  let subjects = [];
+  if (student.selectedCourses && student.selectedCourses.length > 0) {
+    // Load dynamically registered custom course list
+    const allSubjects = db.getSubjects();
+    subjects = student.selectedCourses.map(code => allSubjects.find(s => s.code === code)).filter(Boolean);
+  } else {
+    // Fallback to default semester mappings
+    subjects = db.getSubjectsForCourse(student.courseId, student.semester);
+  }
 
   if (subjects.length === 0) {
     grid.innerHTML = `
       <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted); background: white; border-radius: 8px; border: 1px dashed var(--border-color);">
-        No active course enrollments mapped to ${student.courseId} for Semester ${student.semester}.
+        No active course enrollments registered. Select courses first from the registration portal.
       </div>
     `;
     return;
@@ -2124,4 +2134,112 @@ function renderEnrolledList(student) {
     grid.appendChild(card);
   });
 }
+
+// ==================== 13. SELF-SERVICE COURSE SELECTION MODULE RENDERER ====================
+
+function renderCourseSelectionModule() {
+  const tbody = document.getElementById('course-selection-tbody');
+  tbody.innerHTML = '';
+
+  const role = currentUser.role;
+  const targetStudentId = (role === 'student') ? currentUser.id : (role === 'parent' ? currentUser.studentId : null);
+
+  if (!targetStudentId) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 30px;">
+          Note: Course Registration/Selection portal is only available when logged in as a Student or Parent.
+        </td>
+      </tr>
+    `;
+    document.getElementById('selection-status-label').innerText = 'Access Restricted';
+    return;
+  }
+
+  const student = db.getStudentById(targetStudentId);
+  if (!student) return;
+
+  // Fetch all course subjects mapped to this student's specific degree course
+  const subjects = db.getSubjects().filter(s => s.courseId === student.courseId);
+
+  if (subjects.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 30px;">
+          No registration subjects mapped to program ${student.courseId}.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  // Pre-load already selected courses
+  const selected = student.selectedCourses || [];
+
+  subjects.forEach(sub => {
+    const isChecked = selected.includes(sub.code) ? 'checked' : '';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="text-align: center;">
+        <input type="checkbox" class="course-select-cb" value="${sub.code}" ${isChecked} onchange="updateCourseSelectionCounter()">
+      </td>
+      <td><strong>${sub.code}</strong></td>
+      <td>
+        <div style="font-weight: 700; color: var(--text-main);">${sub.name}</div>
+        <div style="font-size: 0.72rem; color: var(--text-muted);">Semester ${sub.semester}</div>
+      </td>
+      <td>${sub.credits} Credits</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  updateCourseSelectionCounter();
+}
+
+function updateCourseSelectionCounter() {
+  const checkboxes = document.querySelectorAll('.course-select-cb:checked');
+  const count = checkboxes.length;
+  const label = document.getElementById('selection-status-label');
+  
+  label.innerText = `Courses Selected: ${count} / 10`;
+  
+  if (count > 10) {
+    label.style.color = 'var(--danger)';
+    label.innerText += ' (Exceeded limit of 10!)';
+  } else {
+    label.style.color = 'var(--text-main)';
+  }
+}
+
+function submitCourseEnrollmentSelection() {
+  const role = currentUser.role;
+  const targetStudentId = (role === 'student') ? currentUser.id : (role === 'parent' ? currentUser.studentId : null);
+
+  if (!targetStudentId) {
+    alert('Invalid Session. Login as a student to register.');
+    return;
+  }
+
+  const checkboxes = document.querySelectorAll('.course-select-cb:checked');
+  const selectedCodes = Array.from(checkboxes).map(cb => cb.value);
+
+  if (selectedCodes.length === 0) {
+    alert('Please select at least 1 course subject to proceed.');
+    return;
+  }
+
+  if (selectedCodes.length > 10) {
+    alert('Registration Failed: You cannot select more than 10 courses/subjects.');
+    return;
+  }
+
+  const success = db.registerStudentSelectedCourses(targetStudentId, selectedCodes);
+  if (success) {
+    alert('Course Registration Updated Successfully!');
+    showModule('enrolled');
+  } else {
+    alert('An error occurred during registration. Please try again.');
+  }
+}
+
 

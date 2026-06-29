@@ -3,7 +3,7 @@
 const DB_KEY = 'student_erp_db_v2';
 // Increment this version number whenever departments, courses, subjects, or timetables change.
 // The app will auto-refresh static data while preserving students, faculty, and invoices.
-const SCHEMA_VERSION = '4';
+const SCHEMA_VERSION = '5';
 
 class ERPDatabase {
   constructor() {
@@ -365,6 +365,26 @@ class ERPDatabase {
       this.data.messages[idx].read = true;
       this.save();
     }
+  }
+
+  registerStudentSelectedCourses(studentId, subjectCodes) {
+    const idx = this.data.students.findIndex(s => s.id === studentId);
+    if (idx !== -1) {
+      const student = this.data.students[idx];
+      student.selectedCourses = subjectCodes;
+
+      // Ensure attendance records exist for all selected courses
+      if (!student.attendance) student.attendance = {};
+      subjectCodes.forEach(code => {
+        if (!student.attendance[code]) {
+          student.attendance[code] = { attended: 0, total: 0 };
+        }
+      });
+
+      this.save();
+      return true;
+    }
+    return false;
   }
 
   // --- Deletion API ---

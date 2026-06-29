@@ -714,6 +714,39 @@
           </div>
         </section>
 
+        <!-- ==================== COURSE SELECTION PANEL ==================== -->
+        <section id="panel-select-courses" class="workspace-panel animate-fade" style="display: none;">
+          <div class="panel-title-bar">
+            <div>
+              <h1 class="panel-title">Self-Service Course Registration</h1>
+              <p class="panel-subtitle">Select up to 10 course subjects to enroll in for your current active semester.</p>
+            </div>
+          </div>
+
+          <div class="dashboard-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 16px;">
+              <span id="selection-status-label" style="font-weight: 800; font-size: 1rem; color: var(--text-main);">Courses Selected: 0 / 10</span>
+              <button class="btn btn-primary" onclick="submitCourseEnrollmentSelection()">Confirm Registration</button>
+            </div>
+            
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width: 60px; text-align: center;">Select</th>
+                    <th>Subject Code</th>
+                    <th>Subject Name</th>
+                    <th>Credits</th>
+                  </tr>
+                </thead>
+                <tbody id="course-selection-tbody">
+                  <!-- Populated dynamically via app.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
       </div>
     </main>
   </div>
