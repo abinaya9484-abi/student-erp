@@ -3,7 +3,7 @@
 const DB_KEY = 'student_erp_db_v2';
 // Increment this version number whenever departments, courses, subjects, or timetables change.
 // The app will auto-refresh static data while preserving students, faculty, and invoices.
-const SCHEMA_VERSION = '5';
+const SCHEMA_VERSION = '6';
 
 class ERPDatabase {
   constructor() {
@@ -26,6 +26,35 @@ class ERPDatabase {
             'Refreshing static data. Your students, faculty & invoices are preserved.'
           );
           const seed = window.ERP_MOCK_DATA;
+          // Auto-migrate old existing students to pre-populate selectedCourses defaults
+          const coreSubjectsList = [
+            'Programming in C',
+            'Programming in C++',
+            'Object-Oriented Programming (OOP)',
+            'Programming in Java',
+            'Data Structures and Algorithms',
+            'Programming in Python',
+            'Web Development (HTML, CSS & JavaScript)',
+            'Database Management System (DBMS)',
+            'Software Engineering',
+            'Mobile Application Development (Android)'
+          ];
+          const oldStudents = stored.students || [];
+          oldStudents.forEach(s => {
+            if (!s.selectedCourses || s.selectedCourses.length === 0) {
+              s.selectedCourses = seed.subjects
+                .filter(sub => sub.courseId === s.courseId && coreSubjectsList.includes(sub.name))
+                .map(sub => sub.code);
+              
+              if (!s.attendance) s.attendance = {};
+              s.selectedCourses.forEach(code => {
+                if (!s.attendance[code]) {
+                  s.attendance[code] = { attended: 0, total: 0 };
+                }
+              });
+            }
+          });
+
           const migrated = {
             _schemaVersion:  SCHEMA_VERSION,
             // ── Refreshed static seed data ──
@@ -34,7 +63,7 @@ class ERPDatabase {
             subjects:        JSON.parse(JSON.stringify(seed.subjects)),
             timetables:      JSON.parse(JSON.stringify(seed.timetables)),
             // ── Preserved dynamic user data ──
-            students:        stored.students        || [],
+            students:        oldStudents,
             faculty:         stored.faculty         || [],
             invoices:        stored.invoices        || [],
             books:           stored.books           || JSON.parse(JSON.stringify(seed.books)),
@@ -109,10 +138,29 @@ class ERPDatabase {
       grades: []
     };
 
-    // Initialize attendance map for default course subjects
-    const subjects = this.getSubjectsForCourse(newStudent.courseId, newStudent.semester);
-    subjects.forEach(sub => {
-      newStudent.attendance[sub.code] = { attended: 0, total: 0 };
+    // Initialize selectedCourses with the codes of the 10 core subjects
+    const allSubjects = this.getSubjects();
+    const coreSubjectsList = [
+      'Programming in C',
+      'Programming in C++',
+      'Object-Oriented Programming (OOP)',
+      'Programming in Java',
+      'Data Structures and Algorithms',
+      'Programming in Python',
+      'Web Development (HTML, CSS & JavaScript)',
+      'Database Management System (DBMS)',
+      'Software Engineering',
+      'Mobile Application Development (Android)'
+    ];
+    
+    // Find all subjects in this student's course that match the core list
+    newStudent.selectedCourses = allSubjects
+      .filter(s => s.courseId === newStudent.courseId && coreSubjectsList.includes(s.name))
+      .map(s => s.code);
+
+    // Initialize attendance map for default selected subjects
+    newStudent.selectedCourses.forEach(code => {
+      newStudent.attendance[code] = { attended: 0, total: 0 };
     });
 
     this.data.students.push(newStudent);
