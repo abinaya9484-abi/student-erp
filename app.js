@@ -161,6 +161,7 @@ function buildSidebarMenu() {
       { id: 'directory', label: 'Student Directory', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>' },
       { id: 'faculty', label: 'Faculty Roster', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a5 5 0 100 10 5 5 0 000-10z"></path><path d="M2 20a10 10 0 0120 0H2z"></path></svg>' },
       { id: 'courses', label: 'Curriculum & Courses', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>' },
+      { id: 'enrolled', label: 'Enrolled Courses', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>' },
       { id: 'attendance', label: 'Attendance Ledger', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>' },
       { id: 'results', label: 'Exam & Result Registry', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>' },
       { id: 'fees', label: 'Billing Ledger', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>' },
@@ -172,6 +173,7 @@ function buildSidebarMenu() {
   } else if (role === 'faculty') {
     items.push(
       { id: 'directory', label: 'Student Directory', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>' },
+      { id: 'enrolled', label: 'Enrolled Courses', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>' },
       { id: 'attendance', label: 'Class Attendance', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>' },
       { id: 'results', label: 'Grading Sheet', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>' },
       { id: 'timetable', label: 'My Schedule', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect></svg>' },
@@ -179,6 +181,7 @@ function buildSidebarMenu() {
     );
   } else if (role === 'student' || role === 'parent') {
     items.push(
+      { id: 'enrolled', label: 'Enrolled Courses', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>' },
       { id: 'timetable', label: 'Weekly Schedule', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect></svg>' },
       { id: 'attendance', label: 'Attendance Tracker', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path></svg>' },
       { id: 'results', label: 'Grade Transcript', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12v-8z"></path></svg>' },
@@ -254,6 +257,7 @@ function showModule(panelName) {
   else if (panelName === 'timetable') renderTimetableModule();
   else if (panelName === 'announcements') renderAnnouncementsModule();
   else if (panelName === 'reports') renderReportsModule();
+  else if (panelName === 'enrolled') renderEnrolledCoursesModule();
 }
 
 // ==================== 1. DASHBOARD PANEL RENDERER ====================
@@ -1990,3 +1994,134 @@ function downloadReportExcel(type) {
     }
   }
 }
+
+// ==================== 12. ENROLLED COURSES MODULE RENDERER ====================
+
+function renderEnrolledCoursesModule() {
+  const role = currentUser.role;
+  const selectorBar = document.getElementById('enrolled-student-selector-bar');
+  const studentSelect = document.getElementById('enrolled-student-select');
+
+  if (role === 'admin' || role === 'faculty') {
+    selectorBar.style.display = 'block';
+    
+    // Populate students dropdown
+    const students = db.getStudents();
+    studentSelect.innerHTML = '';
+    
+    if (students.length === 0) {
+      studentSelect.innerHTML = '<option value="">No registered students found</option>';
+      document.getElementById('enrolled-courses-grid').innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
+          Please enroll or admit students in the system first.
+        </div>
+      `;
+      return;
+    }
+
+    students.forEach(s => {
+      studentSelect.innerHTML += `<option value="${s.id}">${s.name} (${s.rollNo}) - Sem ${s.semester}</option>`;
+    });
+
+    renderEnrolledCoursesForSelectedStudent();
+  } else {
+    // Student or parent role
+    selectorBar.style.display = 'none';
+    const targetStudentId = role === 'student' ? currentUser.id : currentUser.studentId;
+    const student = db.getStudentById(targetStudentId);
+    
+    if (student) {
+      renderEnrolledList(student);
+    } else {
+      document.getElementById('enrolled-courses-grid').innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
+          Student record could not be found.
+        </div>
+      `;
+    }
+  }
+}
+
+function renderEnrolledCoursesForSelectedStudent() {
+  const studentId = document.getElementById('enrolled-student-select').value;
+  if (!studentId) return;
+  const student = db.getStudentById(studentId);
+  if (student) {
+    renderEnrolledList(student);
+  }
+}
+
+function renderEnrolledList(student) {
+  const grid = document.getElementById('enrolled-courses-grid');
+  grid.innerHTML = '';
+
+  const subjects = db.getSubjectsForCourse(student.courseId, student.semester);
+
+  if (subjects.length === 0) {
+    grid.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted); background: white; border-radius: 8px; border: 1px dashed var(--border-color);">
+        No active course enrollments mapped to ${student.courseId} for Semester ${student.semester}.
+      </div>
+    `;
+    return;
+  }
+
+  subjects.forEach(sub => {
+    // Attendance rates calculations
+    let attended = 0;
+    let total = 0;
+    if (student.attendance && student.attendance[sub.code]) {
+      attended = student.attendance[sub.code].attended;
+      total = student.attendance[sub.code].total;
+    }
+    const attendanceRate = total > 0 ? Math.round((attended / total) * 100) : 100;
+    
+    // Status Badge check
+    let badgeClass = 'badge-success';
+    let statusText = 'Excellent';
+    if (attendanceRate < 75) {
+      badgeClass = 'badge-danger';
+      statusText = 'Attendance Risk';
+    } else if (attendanceRate < 85) {
+      badgeClass = 'badge-warning';
+      statusText = 'Borderline';
+    }
+
+    // Grade entry lookup
+    const gradeRecord = student.grades ? student.grades.find(g => g.code === sub.code) : null;
+    const gradeVal = gradeRecord ? `${gradeRecord.grade} (${gradeRecord.marks} Marks)` : 'Not Yet Graded';
+
+    const card = document.createElement('div');
+    card.className = 'dashboard-card';
+    card.style.display = 'flex';
+    card.style.flexDirection = 'column';
+    card.style.justifyContent = 'space-between';
+    card.style.padding = '20px';
+    card.style.borderLeft = `5px solid ${attendanceRate < 75 ? 'var(--danger)' : 'var(--primary)'}`;
+
+    card.innerHTML = `
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+          <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted);">${sub.code}</span>
+          <span class="badge ${badgeClass}">${statusText}</span>
+        </div>
+        <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px; line-height: 1.3;">${sub.name}</h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 16px;">Credits: ${sub.credits} Units</p>
+      </div>
+
+      <div style="border-top: 1px solid var(--border-color); padding-top: 14px; margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <div>
+          <span style="font-size: 0.7rem; text-transform: uppercase; color: var(--text-light); display: block; margin-bottom: 2px;">Attendance</span>
+          <span style="font-weight: 800; font-size: 1rem; color: ${attendanceRate < 75 ? 'var(--danger)' : 'var(--text-main)'}">${attendanceRate}%</span>
+          <span style="font-size: 0.7rem; color: var(--text-muted); display: block;">(${attended}/${total} classes)</span>
+        </div>
+        <div>
+          <span style="font-size: 0.7rem; text-transform: uppercase; color: var(--text-light); display: block; margin-bottom: 2px;">Term Grade</span>
+          <span style="font-weight: 800; font-size: 0.92rem; color: var(--text-main);">${gradeVal}</span>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+

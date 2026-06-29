@@ -690,6 +690,27 @@
             <div id="analytics-result-body">
               <!-- Injected dynamically via app.js -->
             </div>
+        <!-- ==================== ENROLLED COURSES PANEL ==================== -->
+        <section id="panel-enrolled" class="workspace-panel animate-fade" style="display: none;">
+          <div class="panel-title-bar">
+            <div>
+              <h1 class="panel-title">Enrolled Courses & Academic Load</h1>
+              <p class="panel-subtitle">Monitor current semester active course subjects, credits, and performance.</p>
+            </div>
+          </div>
+
+          <!-- Dynamic selection block for Admin/Faculty roles -->
+          <div id="enrolled-student-selector-bar" class="dashboard-card" style="margin-bottom: 20px; display: none;">
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <label for="enrolled-student-select" style="font-weight: 700; font-size: 0.88rem; color: var(--text-main);">View Subject Load for Student:</label>
+              <select id="enrolled-student-select" class="filter-select" style="max-width: 320px;" onchange="renderEnrolledCoursesForSelectedStudent()">
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+          </div>
+
+          <div id="enrolled-courses-grid" class="stats-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+            <!-- Injected dynamically via app.js -->
           </div>
         </section>
 
