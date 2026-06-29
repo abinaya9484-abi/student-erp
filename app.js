@@ -2156,6 +2156,17 @@ function renderCourseSelectionModule() {
     return;
   }
 
+  // Update panel descriptive subtitle to offer dynamic template presets
+  const subtitle = document.querySelector('#panel-select-courses .panel-subtitle');
+  if (subtitle && !document.getElementById('auto-preset-btn')) {
+    subtitle.innerHTML = `
+      Select up to 10 course subjects to enroll in for your current active semester.
+      <button id="auto-preset-btn" class="btn btn-outline btn-sm" style="margin-left: 12px; padding: 4px 10px; font-size: 0.75rem; vertical-align: middle;" onclick="autoSelectCoreTenPreset()">
+        ✨ Auto-Select 10 Core Courses
+      </button>
+    `;
+  }
+
   const student = db.getStudentById(targetStudentId);
   if (!student) return;
 
@@ -2241,5 +2252,39 @@ function submitCourseEnrollmentSelection() {
     alert('An error occurred during registration. Please try again.');
   }
 }
+
+function autoSelectCoreTenPreset() {
+  const checkboxes = document.querySelectorAll('.course-select-cb');
+  const targetSubjects = [
+    'Programming in C',
+    'Programming in C++',
+    'Object-Oriented Programming (OOP)',
+    'Programming in Java',
+    'Data Structures and Algorithms',
+    'Programming in Python',
+    'Web Development (HTML, CSS & JavaScript)',
+    'Database Management System (DBMS)',
+    'Software Engineering',
+    'Mobile Application Development (Android)'
+  ];
+
+  let selectCount = 0;
+  checkboxes.forEach(cb => {
+    const labelRow = cb.closest('tr');
+    if (labelRow) {
+      const subjectNameText = labelRow.querySelector('td:nth-child(3) div').innerText.trim();
+      if (targetSubjects.includes(subjectNameText)) {
+        cb.checked = true;
+        selectCount++;
+      } else {
+        cb.checked = false;
+      }
+    }
+  });
+
+  updateCourseSelectionCounter();
+  alert(`Auto-selected ${selectCount} core courses. Click "Confirm Registration" to save.`);
+}
+
 
 
