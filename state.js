@@ -1,6 +1,9 @@
 // state.js - Simulated Database Layer with localStorage Persistence
 
 const DB_KEY = 'student_erp_db_v2';
+// Increment this version number whenever departments, courses, subjects, or timetables change.
+// The app will auto-refresh static data while preserving students, faculty, and invoices.
+const SCHEMA_VERSION = '3';
 
 class ERPDatabase {
   constructor() {
@@ -11,15 +14,49 @@ class ERPDatabase {
     const raw = localStorage.getItem(DB_KEY);
     if (raw) {
       try {
-        return JSON.parse(raw);
+        const stored = JSON.parse(raw);
+
+        // ── Schema Version Check ──────────────────────────────────────
+        // If the stored schema version doesn't match the current one,
+        // refresh all static/seed data (departments, courses, subjects,
+        // timetables) but KEEP all dynamic user data safe.
+        if (stored._schemaVersion !== SCHEMA_VERSION) {
+          console.info(
+            `[ERP] Schema updated from v${stored._schemaVersion || '?'} → v${SCHEMA_VERSION}. ` +
+            'Refreshing static data. Your students, faculty & invoices are preserved.'
+          );
+          const seed = window.ERP_MOCK_DATA;
+          const migrated = {
+            _schemaVersion:  SCHEMA_VERSION,
+            // ── Refreshed static seed data ──
+            departments:     JSON.parse(JSON.stringify(seed.departments)),
+            courses:         JSON.parse(JSON.stringify(seed.courses)),
+            subjects:        JSON.parse(JSON.stringify(seed.subjects)),
+            timetables:      JSON.parse(JSON.stringify(seed.timetables)),
+            // ── Preserved dynamic user data ──
+            students:        stored.students        || [],
+            faculty:         stored.faculty         || [],
+            invoices:        stored.invoices        || [],
+            books:           stored.books           || JSON.parse(JSON.stringify(seed.books)),
+            issuedBooks:     stored.issuedBooks     || [],
+            announcements:   stored.announcements   || [],
+            messages:        stored.messages        || []
+          };
+          localStorage.setItem(DB_KEY, JSON.stringify(migrated));
+          return migrated;
+        }
+
+        return stored;
       } catch (e) {
         console.error('Error parsing local storage database, reseeding...', e);
       }
     }
-    // Seed database if empty or corrupted
+
+    // Seed database fresh if empty or corrupted
     const seed = window.ERP_MOCK_DATA;
-    localStorage.setItem(DB_KEY, JSON.stringify(seed));
-    return JSON.parse(JSON.stringify(seed)); // Deep clone
+    const freshData = { _schemaVersion: SCHEMA_VERSION, ...JSON.parse(JSON.stringify(seed)) };
+    localStorage.setItem(DB_KEY, JSON.stringify(freshData));
+    return freshData;
   }
 
   save() {
